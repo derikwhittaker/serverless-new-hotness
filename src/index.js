@@ -9,7 +9,12 @@ async function handler() {
 
     logger.debug('Index.handler', `Teams Results: ${JSON.stringify(teamsResults)} `);
 
-    return teamsResults;
+    var response = {
+        "statusCode": 200,
+        "body": JSON.stringify(teamsResults)
+    };
+
+    return response;
 }
 
 
