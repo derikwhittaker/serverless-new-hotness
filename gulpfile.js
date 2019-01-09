@@ -13,15 +13,10 @@ const options = {
 
 const environments = {
     active: "nonprod",
-    prod: {
-        lambdaName: "ce-enterprise-settings-prod-lambda",
-        lambdaPackageName: "lambda-enterprise-settings.zip",
-        dropBucketName: "ce-enterprise-lambda-drop-prod-20180531075037033500000001"
-    },
     nonprod: {
-        lambdaName: "ce-enterprise-settings-nonprod-lambda",
-        lambdaPackageName: "lambda-enterprise-settings.zip",
-        dropBucketName: "ce-enterprise-lambda-drop-nonprod-20180523183846086000000001"
+        lambdaName: "serverless-hotness-demo",
+        lambdaPackageName: "serverless-new-hotness.zip",
+        dropBucketName: "serverless-drop-bucket"
     }
 }
 
@@ -35,43 +30,10 @@ gulp.task('package-for-deploy', function (done) {
         done);
 });
 
-gulp.task('package-deploy-prod', function (done) {
-
-    environments.active = "prod";
+gulp.task('deploy', function (done) {
 
     runSequence(
         'package-for-deploy',
-        'deploy-to-s3',
-        'deploy-to-lambda',
-        done);
-});
-
-gulp.task('package-deploy-nonprod', function (done) {
-
-    environments.active = "nonprod";
-
-    runSequence(
-        'package-for-deploy',
-        'deploy-to-s3',
-        'deploy-to-lambda',
-        done);
-});
-
-gulp.task('deploy-nonprod', function (done) {
-
-    environments.active = "nonprod";
-
-    runSequence(
-        'deploy-to-s3',
-        'deploy-to-lambda',
-        done);
-});
-
-gulp.task('deploy-prod', function (done) {
-
-    environments.active = "prod";
-
-    runSequence(
         'deploy-to-s3',
         'deploy-to-lambda',
         done);
@@ -84,6 +46,7 @@ gulp.task('babel-code', babelCode);
 gulp.task('copy-needed-files', copyNeededFiles);
 gulp.task('package-node', packageNode);
 gulp.task('clean-build-folders', cleanBuildFolders);
+gulp.task('aws-credentials', awsCredentials);
 
 function babelCode() {
     log.info("Attmpeting to Transpile code");
@@ -125,6 +88,15 @@ function cleanBuildFolders() {
 
     return gulp.src([options.stagingBuildFolder])
         .pipe(clean({ read: false }));
+}
+
+function awsCredentials() {
+    const cmd = `aws configure --profile `;
+
+    log.info(`Setting Credentials Files:`);
+    log.info(`CMD -> ${cmd}`);
+
+    return run(cmd).exec();
 }
 
 function deployToLambda() {
