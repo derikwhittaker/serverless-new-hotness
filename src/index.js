@@ -36,7 +36,7 @@ async function handler() {
 
         return response;
     } catch (error) {
-        logger.info('index.handler', JSON.stringify(error));
+        logger.error('index.handler', JSON.stringify(error));
 
         return {
             statusCode: 400,
